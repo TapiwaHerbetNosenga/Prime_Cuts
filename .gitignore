@@ -137,6 +137,23 @@ dist
 !.yarn/sdks
 !.yarn/versions
 
+# Firebase
+.firebase/
+firebase-debug.log*
+firestore-debug.log
+ui-debug.log
+serviceAccountKey.json
+*-firebase-adminsdk-*.json
+
+# Hosting platforms
+.vercel/
+.netlify/
+
+# Editor and OS files
+.idea/
+.DS_Store
+Thumbs.db
+
 # Vite files
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
