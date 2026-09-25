@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useEffect, useMemo, useRef } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { shopInfo } from '../data/shopInfo'
 import { services } from '../data/services'
@@ -14,16 +14,19 @@ const STEPS = ['Service', 'Barber', 'Date & Time', 'Your details', 'Confirm']
 export default function Booking() {
   const [searchParams] = useSearchParams()
   const preselectedService = searchParams.get('service')
+  const preselectedBarber = searchParams.get('barber')
+  const bookingFormRef = useRef(null)
 
   // --- Step / selection state ---
   const [step, setStep] = useState(0)
   const [serviceId, setServiceId] = useState(preselectedService || '')
-  const [barberId, setBarberId] = useState('any')
+  const [barberId, setBarberId] = useState(preselectedBarber || 'any')
   const [selectedDate, setSelectedDate] = useState(null)
   const [selectedTime, setSelectedTime] = useState('')
 
   // --- Customer details + submission state ---
   const [customer, setCustomer] = useState({ name: '', email: '', phone: '', notes: '' })
+  const [formErrors, setFormErrors] = useState({})
   const [submitting, setSubmitting] = useState(false)
   const [submitError, setSubmitError] = useState('')
   const [confirmedBooking, setConfirmedBooking] = useState(null)
@@ -34,12 +37,17 @@ export default function Booking() {
   // --- Taken slots state (for disabling already booked times) ---
 const [takenSlots, setTakenSlots] = useState({})
 
-  // If a service was pre-selected via the Services page, skip straight to Barber
+  // If a service or barber was pre-selected via a CTA, skip straight to the relevant step
   useEffect(() => {
     if (preselectedService && services.some((s) => s.id === preselectedService)) {
+      setServiceId(preselectedService)
       setStep(1)
     }
-  }, [preselectedService])
+
+    if (preselectedBarber && barbers.some((b) => b.id === preselectedBarber)) {
+      setBarberId(preselectedBarber)
+    }
+  }, [preselectedService, preselectedBarber])
 
   // Whenever the selected date changes, fetch the taken slots for that date
   useEffect(() => {
@@ -50,6 +58,16 @@ const [takenSlots, setTakenSlots] = useState({})
   })
   return () => { cancelled = true }
 }, [selectedDate])
+
+  useEffect(() => {
+    if (!bookingFormRef.current) return
+
+    const mobile = window.innerWidth < 860
+    bookingFormRef.current.scrollIntoView({
+      behavior: 'smooth',
+      block: mobile ? 'center' : 'start',
+    })
+  }, [step])
 
   // --- Derived values ---
   const service = services.find((s) => s.id === serviceId)
@@ -78,13 +96,68 @@ const [takenSlots, setTakenSlots] = useState({})
   }
 
   function isTimeTaken(time, barberId, takenSlots) {
-  const takenBarbers = takenSlots[time]
-  if (!takenBarbers) return false
-  if (barberId === 'any') {
-    return barbers.every((b) => takenBarbers.has(b.id))
+    const takenBarbers = takenSlots[time]
+    if (!takenBarbers) return false
+    if (barberId === 'any') {
+      return barbers.every((b) => takenBarbers.has(b.id))
+    }
+    return takenBarbers.has(barberId)
   }
-  return takenBarbers.has(barberId)
-}
+
+  function validateCustomerDetails(data) {
+    const errors = {}
+    const name = data.name.trim()
+    const email = data.email.trim()
+    const phone = data.phone.trim()
+
+    if (!name) {
+      errors.name = 'Please enter your full name.'
+    }
+
+    if (!email) {
+      errors.email = 'Please enter your email address.'
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      errors.email = 'Please enter a valid email address.'
+    }
+
+    if (phone && !/^[0-9+()\s-]{7,}$/.test(phone)) {
+      errors.phone = 'Please enter a valid phone number.'
+    }
+
+    return errors
+  }
+
+  function handleCustomerChange(field, value) {
+    const nextCustomer = { ...customer, [field]: value }
+    setCustomer(nextCustomer)
+
+    setFormErrors((current) => {
+      if (!current[field]) return current
+      const nextErrors = { ...current }
+      delete nextErrors[field]
+      return nextErrors
+    })
+  }
+
+  function handleReviewBooking() {
+    const nextErrors = validateCustomerDetails(customer)
+    setFormErrors(nextErrors)
+
+    if (Object.keys(nextErrors).length === 0) {
+      goNext()
+    }
+  }
+
+  async function handleConfirmClick() {
+    const nextErrors = validateCustomerDetails(customer)
+    setFormErrors(nextErrors)
+
+    if (Object.keys(nextErrors).length > 0) {
+      return
+    }
+
+    await handleConfirm()
+  }
 
   return (
     <>
@@ -117,7 +190,7 @@ const [takenSlots, setTakenSlots] = useState({})
           </ul>
         </div>
 
-        <div className="booking-form-shell">
+        <div className="booking-form-shell" ref={bookingFormRef}>
           <ol className="booking-progress" aria-label="Booking steps">
             {STEPS.map((label, i) => (
               <li key={label} className={i === step ? 'active' : i < step ? 'done' : ''}>
@@ -228,19 +301,36 @@ const [takenSlots, setTakenSlots] = useState({})
               <div className="detail-fields">
                 <label>
                   Full name
-                  <input type="text" value={customer.name} onChange={(e) => setCustomer({ ...customer, name: e.target.value })} required />
+                  <input
+                    type="text"
+                    value={customer.name}
+                    onChange={(e) => handleCustomerChange('name', e.target.value)}
+                    required
+                  />
+                  {formErrors.name && <small className="form-error">{formErrors.name}</small>}
                 </label>
                 <label>
                   Email
-                  <input type="email" value={customer.email} onChange={(e) => setCustomer({ ...customer, email: e.target.value })} required />
+                  <input
+                    type="email"
+                    value={customer.email}
+                    onChange={(e) => handleCustomerChange('email', e.target.value)}
+                    required
+                  />
+                  {formErrors.email && <small className="form-error">{formErrors.email}</small>}
                 </label>
                 <label>
                   Phone
-                  <input type="tel" value={customer.phone} onChange={(e) => setCustomer({ ...customer, phone: e.target.value })} />
+                  <input
+                    type="tel"
+                    value={customer.phone}
+                    onChange={(e) => handleCustomerChange('phone', e.target.value)}
+                  />
+                  {formErrors.phone && <small className="form-error">{formErrors.phone}</small>}
                 </label>
                 <label>
                   Notes (optional)
-                  <textarea rows="3" value={customer.notes} onChange={(e) => setCustomer({ ...customer, notes: e.target.value })} />
+                  <textarea rows="3" value={customer.notes} onChange={(e) => handleCustomerChange('notes', e.target.value)} />
                 </label>
               </div>
               <div className="step-actions">
@@ -248,8 +338,8 @@ const [takenSlots, setTakenSlots] = useState({})
                 <button
                   type="button"
                   className="btn"
-                  disabled={!customer.name || !customer.email}
-                  onClick={goNext}
+                  disabled={submitting}
+                  onClick={handleReviewBooking}
                 >
                   Review booking
                 </button>
@@ -276,7 +366,7 @@ const [takenSlots, setTakenSlots] = useState({})
 
                   <div className="step-actions">
                     <button type="button" className="btn btn-outline-dark" onClick={goBack} disabled={submitting}>Back</button>
-                    <button type="button" className="btn" onClick={handleConfirm} disabled={submitting}>
+                    <button type="button" className="btn" onClick={handleConfirmClick} disabled={submitting}>
                       {submitting ? 'Booking...' : 'Confirm booking'}
                     </button>
                   </div>

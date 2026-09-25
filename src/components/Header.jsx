@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Link, NavLink } from 'react-router-dom'
+import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom'
 import logo from '../assets/logos/dark_span_logo.svg'
 import { shopInfo } from '../data/shopInfo'
 
@@ -12,12 +12,24 @@ const links = [
 
 export default function Header() {
   const [open, setOpen] = useState(false)
+  const location = useLocation()
+  const navigate = useNavigate()
 
   useEffect(() => {
     const onKey = (e) => { if (e.key === 'Escape') setOpen(false) }
     document.addEventListener('keydown', onKey)
     return () => document.removeEventListener('keydown', onKey)
   }, [])
+
+  function handleBookingLink(e) {
+    if (location.pathname === '/booking') {
+      e.preventDefault()
+      window.scrollTo({ top: 0, left: 0, behavior: 'smooth' })
+      return
+    }
+
+    navigate('/booking')
+  }
 
   return (
     <header className="site-header">
@@ -42,7 +54,7 @@ export default function Header() {
         </nav>
 
         <div className="header-actions">
-          <Link to="/booking" className="btn btn-sm">Book Now</Link>
+          <Link to="/booking" className="btn btn-sm" onClick={handleBookingLink}>Book Now</Link>
           <button
             className="menu-toggle"
             aria-expanded={open}

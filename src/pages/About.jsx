@@ -50,21 +50,24 @@ export default function About() {
         </div>
         <div className="barber-grid">
           {barbers.map((b) => (
-            <article key={b.id} className="barber-card">
-              {barberPhotos[b.id] ? (
-                <img src={barberPhotos[b.id]} alt={b.name} className="barber-photo" />
-              ) : (
-                <div className="barber-avatar" aria-hidden="true">{initials(b.name)}</div>
-              )}
-              <h3>{b.name}</h3>
-              <p className="barber-role">{b.role}</p>
-              <p>{b.bio}</p>
-              <ul className="barber-tags">
-                {b.specialties.map((s) => (
-                  <li key={s}>{s}</li>
-                ))}
-              </ul>
-            </article>
+            <Link key={b.id} to={`/booking?barber=${b.id}`} className="barber-card-link">
+              <article className="barber-card">
+                {barberPhotos[b.id] ? (
+                  <img src={barberPhotos[b.id]} alt={b.name} className="barber-photo" />
+                ) : (
+                  <div className="barber-avatar" aria-hidden="true">{initials(b.name)}</div>
+                )}
+                <h3>{b.name}</h3>
+                <p className="barber-role">{b.role}</p>
+                <p>{b.bio}</p>
+                <ul className="barber-tags">
+                  {b.specialties.map((s) => (
+                    <li key={s}>{s}</li>
+                  ))}
+                </ul>
+                <span className="btn btn-sm barber-card-btn">Book with {b.name}</span>
+              </article>
+            </Link>
           ))}
         </div>
       </section>

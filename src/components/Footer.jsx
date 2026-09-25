@@ -1,9 +1,21 @@
-import { Link } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 import logo from '../assets/logos/dark_big_logo.svg'
 import { shopInfo } from '../data/shopInfo'
 
 export default function Footer() {
   const { name, tagline, address, phone, email, hours, social } = shopInfo
+  const location = useLocation()
+  const navigate = useNavigate()
+
+  function handleBookingLink(e) {
+    if (location.pathname === '/booking') {
+      e.preventDefault()
+      window.scrollTo({ top: 0, left: 0, behavior: 'smooth' })
+      return
+    }
+
+    navigate('/booking')
+  }
 
   return (
     <footer className="site-footer">
@@ -19,8 +31,8 @@ export default function Footer() {
             <li><Link to="/">Home</Link></li>
             <li><Link to="/services">Services</Link></li>
             <li><Link to="/about">About</Link></li>
-            <li><Link to="/booking">Contact</Link></li>
-            <li><Link to="/booking">Book an appointment</Link></li>
+            <li><Link to="/booking" onClick={handleBookingLink}>Contact</Link></li>
+            <li><Link to="/booking" onClick={handleBookingLink}>Book an appointment</Link></li>
           </ul>
         </nav>
 
