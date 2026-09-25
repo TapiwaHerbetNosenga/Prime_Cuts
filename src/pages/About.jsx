@@ -28,7 +28,7 @@ export default function About() {
       </section>
 
       <section className="split-section">
-        <img src={storyImg} alt="A barber at work in the Prime Cuts shop" />
+        <img src={storyImg} alt="A barber at work in the Prime Cuts shop"  className="crop-top" />
         <div className="split-content">
           <h2>Our story</h2>
           <p>

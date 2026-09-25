@@ -28,14 +28,22 @@ export function generateSlots(date, durationMinutes) {
   const close = toMinutes(hours.close)
   const slots = []
 
+  const now = new Date()
+  const isToday = formatDateForId(date) === formatDateForId(now)
+  const nowMinutes = now.getHours() * 60 + now.getMinutes()
+
   for (let start = open; start + durationMinutes <= close; start += 15) {
+    if (isToday && start <= nowMinutes) continue
     slots.push(toHHMM(start))
   }
   return slots
 }
 
 export function formatDateForId(date) {
-  return date.toISOString().slice(0, 10) // "2026-10-03"
+  const y = date.getFullYear()
+  const m = String(date.getMonth() + 1).padStart(2, '0')
+  const d = String(date.getDate()).padStart(2, '0')
+  return `${y}-${m}-${d}`
 }
 
 export function slotId(date, time, barberId) {

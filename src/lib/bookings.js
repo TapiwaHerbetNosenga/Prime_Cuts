@@ -1,6 +1,6 @@
-import { runTransaction, doc, addDoc, collection, serverTimestamp } from 'firebase/firestore'
+import { runTransaction, doc, addDoc, collection, serverTimestamp, query, where, getDocs } from 'firebase/firestore'
 import { db } from './firebase'
-import { slotId } from './slots'
+import { slotId, formatDateForId } from './slots'
 import { barbers } from '../data/barbers'
 
 async function claimSlotTransactionally(date, time, barberId) {
@@ -47,7 +47,7 @@ export async function submitBooking({ service, barberId, date, time, customer })
     duration: service.duration,
     barberId: finalBarberId,
     barberName: barber.name,
-    date: date.toISOString().slice(0, 10),
+  date: formatDateForId(date),
     time,
     customerName: customer.name,
     customerEmail: customer.email,
@@ -57,4 +57,18 @@ export async function submitBooking({ service, barberId, date, time, customer })
   })
 
   return { bookingId: bookingRef.id, barberName: barber.name }
+}
+
+export async function getTakenSlotsForDate(date) {
+  const dateId = formatDateForId(date)
+  const q = query(collection(db, 'slots'), where('date', '==', dateId))
+  const snap = await getDocs(q)
+
+  const taken = {}
+  snap.forEach((doc) => {
+    const { time, barberId } = doc.data()
+    if (!taken[time]) taken[time] = new Set()
+    taken[time].add(barberId)
+  })
+  return taken
 }

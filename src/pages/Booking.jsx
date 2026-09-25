@@ -7,6 +7,7 @@ import { generateSlots, nextDays, formatDateForId } from '../lib/slots'
 import { submitBooking } from '../lib/bookings'
 import { downloadICS, googleCalendarUrl } from '../lib/calendar'
 import BookingSuccessModal from '../components/BookingSuccessModal'
+import { getTakenSlotsForDate } from '../lib/bookings'
 
 const STEPS = ['Service', 'Barber', 'Date & Time', 'Your details', 'Confirm']
 
@@ -30,12 +31,25 @@ export default function Booking() {
   // --- Success modal state ---
   const [showSuccessModal, setShowSuccessModal] = useState(false)
 
+  // --- Taken slots state (for disabling already booked times) ---
+const [takenSlots, setTakenSlots] = useState({})
+
   // If a service was pre-selected via the Services page, skip straight to Barber
   useEffect(() => {
     if (preselectedService && services.some((s) => s.id === preselectedService)) {
       setStep(1)
     }
   }, [preselectedService])
+
+  // Whenever the selected date changes, fetch the taken slots for that date
+  useEffect(() => {
+  if (!selectedDate) return
+  let cancelled = false
+  getTakenSlotsForDate(selectedDate).then((result) => {
+    if (!cancelled) setTakenSlots(result)
+  })
+  return () => { cancelled = true }
+}, [selectedDate])
 
   // --- Derived values ---
   const service = services.find((s) => s.id === serviceId)
@@ -62,6 +76,15 @@ export default function Booking() {
       setSubmitting(false)
     }
   }
+
+  function isTimeTaken(time, barberId, takenSlots) {
+  const takenBarbers = takenSlots[time]
+  if (!takenBarbers) return false
+  if (barberId === 'any') {
+    return barbers.every((b) => takenBarbers.has(b.id))
+  }
+  return takenBarbers.has(barberId)
+}
 
   return (
     <>
@@ -174,21 +197,24 @@ export default function Booking() {
               </div>
 
               {selectedDate && (
-                <div className="time-grid">
-                  {availableTimes.length === 0 && <p>No times available that day.</p>}
-                  {availableTimes.map((t) => (
-                    <button
-                      type="button"
-                      key={t}
-                      className={`time-chip ${selectedTime === t ? 'selected' : ''}`}
-                      onClick={() => setSelectedTime(t)}
-                    >
-                      {t}
-                    </button>
-                  ))}
-                </div>
-              )}
-
+  <div className="time-grid">
+    {availableTimes.length === 0 && <p>No times available that day.</p>}
+    {availableTimes.map((t) => {
+      const taken = isTimeTaken(t, barberId, takenSlots)
+      return (
+        <button
+          type="button"
+          key={t}
+          className={`time-chip ${selectedTime === t ? 'selected' : ''} ${taken ? 'taken' : ''}`}
+          disabled={taken}
+          onClick={() => setSelectedTime(t)}
+        >
+          {t}
+        </button>
+      )
+    })}
+  </div>
+)}
               <div className="step-actions">
                 <button type="button" className="btn btn-outline-dark" onClick={goBack}>Back</button>
                 <button type="button" className="btn" disabled={!selectedTime} onClick={goNext}>Continue</button>
@@ -270,7 +296,7 @@ export default function Booking() {
                         downloadICS({
                           serviceName: service.name,
                           barberName: confirmedBooking.barberName,
-                          date: selectedDate.toISOString().slice(0, 10),
+                          date: formatDateForId(selectedDate),
                           time: selectedTime,
                           duration: service.duration,
                         })
@@ -283,7 +309,7 @@ export default function Booking() {
                       href={googleCalendarUrl({
                         serviceName: service.name,
                         barberName: confirmedBooking.barberName,
-                        date: selectedDate.toISOString().slice(0, 10),
+                        date: formatDateForId(selectedDate),
                         time: selectedTime,
                         duration: service.duration,
                       })}
