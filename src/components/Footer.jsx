@@ -3,7 +3,7 @@ import logo from '../assets/logos/dark_big_logo.svg'
 import { shopInfo } from '../data/shopInfo'
 
 export default function Footer() {
-  const { name, tagline, address, phone, email, hours, social } = shopInfo
+  const { name, tagline, address, phone, phoneHref, email, emailHref, hours, social } = shopInfo
   const location = useLocation()
   const navigate = useNavigate()
 
@@ -41,8 +41,8 @@ export default function Footer() {
           <address>
             {address.street}<br />
             {address.city}, {address.postalCode}<br />
-            <a href={`tel:${phone.replace(/\s/g, '')}`}>{phone}</a><br />
-            <a href={`mailto:${email}`}>{email}</a>
+            <a href={`tel:${phoneHref}`}>{phone}</a><br />
+            <a href={`mailto:${emailHref}`}>{email}</a>
           </address>
         </div>
 

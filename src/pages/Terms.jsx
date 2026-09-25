@@ -83,8 +83,8 @@ export default function Terms() {
         <h2>10. Contact</h2>
         <p>
           Questions about these terms can be sent to{' '}
-          <a href={`mailto:${shopInfo.email}`}>{shopInfo.email}</a> or by
-          calling <a href={`tel:${shopInfo.phone.replace(/\s/g, '')}`}>{shopInfo.phone}</a>.
+          <a href={`mailto:${shopInfo.emailHref}`}>{shopInfo.email}</a> or by
+          calling <a href={`tel:${shopInfo.phoneHref}`}>{shopInfo.phone}</a>.
         </p>
 
         <p className="legal-disclaimer">
