@@ -17,7 +17,7 @@ export const barbers = [
     id: 'damian',
     name: 'Damian Khumalo',
     role: 'Barber',
-    bio: 'Da works across all cuts and is the shop\'s go-to for kids and first-time clients.',
+    bio: 'Damian works across all cuts and is the shop\'s go-to for kids and first-time clients.',
     specialties: ['Kids cuts', 'Textured cuts', 'Line-ups'],
   },
 ]
