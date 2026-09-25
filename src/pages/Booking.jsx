@@ -176,8 +176,8 @@ const [takenSlots, setTakenSlots] = useState({})
             {shopInfo.address.city}, {shopInfo.address.postalCode}
           </address>
           <p>
-            <a href={`tel:${shopInfo.phone.replace(/\s/g, '')}`}>{shopInfo.phone}</a><br />
-            <a href={`mailto:${shopInfo.email}`}>{shopInfo.email}</a>
+            <a href={`tel:${shopInfo.phoneHref}`}>{shopInfo.phone}</a><br />
+            <a href={`mailto:${shopInfo.emailHref}`}>{shopInfo.email}</a>
           </p>
           <h2>Opening hours</h2>
           <ul className="hours">

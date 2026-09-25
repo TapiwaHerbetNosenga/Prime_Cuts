@@ -2,8 +2,10 @@ export const shopInfo = {
   name: 'Prime Cuts',
   tagline: 'Classic cuts. Clean fades. Sharp beards.',
   address: { street: '14 Barber Lane', city: 'Cape Town', postalCode: '8001' },
-  phone: '+27 000 000 0000',
-  email: 'hello@primecuts.example',
+  phone: '078 245 6790',
+  phoneHref: '+27782456790',
+  email: 'primecuts@gmail.com',
+  emailHref: 'nosengaherbet@gmail.com',
   hours: [
     { day: 'Monday', open: null, close: null },
     { day: 'Tuesday', open: '09:00', close: '18:00' },
