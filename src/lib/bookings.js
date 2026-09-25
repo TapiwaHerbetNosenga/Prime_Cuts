@@ -1,21 +1,30 @@
 import { runTransaction, doc, addDoc, collection, serverTimestamp, query, where, getDocs } from 'firebase/firestore'
 import { db } from './firebase'
-import { slotId, formatDateForId } from './slots'
+import { slotId, formatDateForId, occupiedSlotTimes } from './slots'
 import { barbers } from '../data/barbers'
 
-async function claimSlotTransactionally(date, time, barberId) {
-  const id = slotId(date, time, barberId)
-  const ref = doc(db, 'slots', id)
+async function claimSlotRangeTransactionally(date, startTime, durationMinutes, barberId) {
+  const times = occupiedSlotTimes(startTime, durationMinutes)
+  const refs = times.map((t) => doc(db, 'slots', slotId(date, t, barberId)))
 
   await runTransaction(db, async (transaction) => {
-    const snap = await transaction.get(ref)
-    if (snap.exists()) {
-      throw new Error('SLOT_TAKEN')
+    // Check every slot in the range first
+    for (const ref of refs) {
+      const snap = await transaction.get(ref)
+      if (snap.exists()) {
+        throw new Error('SLOT_TAKEN')
+      }
     }
-    transaction.set(ref, { taken: true, barberId, date: id.split('_')[0], time })
+    // Only claim them all if every single one was free
+    refs.forEach((ref, i) => {
+      transaction.set(ref, {
+        taken: true,
+        barberId,
+        date: formatDateForId(date),
+        time: times[i],
+      })
+    })
   })
-
-  return id
 }
 
 export async function submitBooking({ service, barberId, date, time, customer }) {
@@ -25,7 +34,7 @@ export async function submitBooking({ service, barberId, date, time, customer })
     let claimed = false
     for (const b of barbers) {
       try {
-        await claimSlotTransactionally(date, time, b.id)
+        await claimSlotRangeTransactionally(date, time, service.duration, b.id)
         finalBarberId = b.id
         claimed = true
         break
@@ -35,7 +44,7 @@ export async function submitBooking({ service, barberId, date, time, customer })
     }
     if (!claimed) throw new Error('No barbers available at that time. Please pick another slot.')
   } else {
-    await claimSlotTransactionally(date, time, barberId)
+    await claimSlotRangeTransactionally(date, time, service.duration, barberId)
   }
 
   const barber = barbers.find((b) => b.id === finalBarberId)
@@ -47,7 +56,7 @@ export async function submitBooking({ service, barberId, date, time, customer })
     duration: service.duration,
     barberId: finalBarberId,
     barberName: barber.name,
-  date: formatDateForId(date),
+    date: formatDateForId(date),
     time,
     customerName: customer.name,
     customerEmail: customer.email,
