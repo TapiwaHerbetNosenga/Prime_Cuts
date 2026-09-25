@@ -6,6 +6,7 @@ import { barbers } from '../data/barbers'
 import { generateSlots, nextDays, formatDateForId } from '../lib/slots'
 import { submitBooking } from '../lib/bookings'
 import { downloadICS, googleCalendarUrl } from '../lib/calendar'
+import BookingSuccessModal from '../components/BookingSuccessModal'
 
 const STEPS = ['Service', 'Barber', 'Date & Time', 'Your details', 'Confirm']
 
@@ -25,6 +26,9 @@ export default function Booking() {
   const [submitting, setSubmitting] = useState(false)
   const [submitError, setSubmitError] = useState('')
   const [confirmedBooking, setConfirmedBooking] = useState(null)
+
+  // --- Success modal state ---
+  const [showSuccessModal, setShowSuccessModal] = useState(false)
 
   // If a service was pre-selected via the Services page, skip straight to Barber
   useEffect(() => {
@@ -51,6 +55,7 @@ export default function Booking() {
     try {
       const result = await submitBooking({ service, barberId, date: selectedDate, time: selectedTime, customer })
       setConfirmedBooking(result)
+      setShowSuccessModal(true)
     } catch (err) {
       setSubmitError(err.message || 'Something went wrong. Please try a different time.')
     } finally {
@@ -294,6 +299,13 @@ export default function Booking() {
           )}
         </div>
       </div>
+
+      {showSuccessModal && (
+        <BookingSuccessModal
+          customerFirstName={customer.name.split(' ')[0]}
+          onClose={() => setShowSuccessModal(false)}
+        />
+      )}
     </>
   )
 }

@@ -204,3 +204,41 @@ legend { font-family: var(--font-heading); font-size: 1.2rem; padding: 0; margin
 .booking-success-note { font-size: 0.9rem; color: #888; margin-top: 1.5rem; padding-top: 1rem; border-top: 1px dashed rgb(26 26 26 / 20%); }
 
 .calendar-actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 0.75rem; margin-top: 1.5rem; }
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  background: rgb(26 26 26 / 65%);
+}
+
+.modal-box {
+  position: relative;
+  width: 100%;
+  max-width: 420px;
+  padding: 2rem 1.75rem;
+  background: var(--color-cream);
+  border-radius: var(--radius);
+  text-align: center;
+}
+
+.modal-box h2 { margin: 0 0 0.75rem; color: var(--color-oxblood); }
+.modal-box p { margin: 0 0 1.5rem; }
+
+.modal-close {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.75rem;
+  border: 0;
+  background: none;
+  font-size: 1.75rem;
+  line-height: 1;
+  cursor: pointer;
+  color: var(--color-charcoal);
+  padding: 0.25rem 0.5rem;
+}
+.modal-close:hover { color: var(--color-oxblood); }
