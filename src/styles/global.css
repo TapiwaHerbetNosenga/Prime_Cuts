@@ -9,12 +9,15 @@
   --max-width: 1200px;
 }
 
+
+
 *, *::before, *::after { box-sizing: border-box; }
 body { margin: 0; font-family: var(--font-body); background: var(--color-cream); color: var(--color-charcoal); line-height: 1.6; }
 h1, h2, h3 { font-family: var(--font-heading); line-height: 1.2; }
 img { max-width: 100%; display: block; }
 a { color: inherit; }
 :focus-visible { outline: 2px solid currentColor; outline-offset: 3px; }
+
 
 .container { width: min(100% - 2rem, var(--max-width)); margin-inline: auto; }
 .page { padding-block: 3rem; min-height: 60vh; }
@@ -114,8 +117,8 @@ a { color: inherit; }
 .hours-location h2 { font-size: 1.15rem; }
 
 /* CTA band */
-.cta-band { padding-block: 3rem; background: var(--color-oxblood); color: var(--color-cream); text-align: center; }
-.cta-band h2 { margin: 0 0 1.25rem; color: var(--color-cream); }
+.cta-band { padding-block: 3rem; background: var(--color-charcoal); color: var(--color-cream); text-align: center; }
+.cta-band h2 { margin: 0 0 1.25rem; color: var(--color-brass); }
 
 /* About: barber grid */
 .barber-grid { display: grid; gap: 1.5rem; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
@@ -148,6 +151,8 @@ a { color: inherit; }
 .booking-info h2, .booking-form-shell h2 { margin-top: 0; }
 .booking-info address { font-style: normal; margin-bottom: 1rem; }
 .map-placeholder { margin-top: 1.5rem; height: 180px; display: flex; align-items: center; justify-content: center; background: var(--color-cream); border: 1px dashed rgb(26 26 26 / 30%); border-radius: var(--radius); color: #6b6b6b; font-size: 0.9rem; }
+.booking-info,
+.booking-form-shell { min-width: 0; }
 
 .booking-form-shell { padding: 1.5rem; background: #fff; border: 1px solid rgb(26 26 26 / 15%); border-radius: var(--radius); }
 .booking-note { font-size: 0.9rem; color: var(--color-oxblood); margin-top: 0; }
@@ -166,7 +171,7 @@ a { color: inherit; }
 .booking-progress li.done { color: var(--color-oxblood); }
 .booking-progress li.active { color: var(--color-charcoal); font-weight: 700; }
 
-fieldset { border: 0; padding: 0; margin: 0; }
+fieldset { border: 0; padding: 0; margin: 0; min-width: 0; }
 legend { font-family: var(--font-heading); font-size: 1.2rem; padding: 0; margin-bottom: 1rem; }
 
 .option-grid { display: grid; gap: 0.75rem; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); margin-bottom: 1.5rem; }
@@ -184,6 +189,8 @@ legend { font-family: var(--font-heading); font-size: 1.2rem; padding: 0; margin
 .time-grid { display: grid; gap: 0.5rem; grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); margin-bottom: 1.5rem; }
 .time-chip { padding: 0.5rem; border: 1px solid rgb(26 26 26 / 25%); border-radius: var(--radius); background: #fff; cursor: pointer; }
 .time-chip.selected { border-color: var(--color-brass); background: var(--color-brass); }
+.time-chip.taken { background: rgb(140 47 43 / 12%); border-color: var(--color-oxblood); color: var(--color-oxblood); cursor: not-allowed; text-decoration: line-through; }
+.time-chip.taken:hover { background: rgb(140 47 43 / 12%); }
 
 .step-actions { display: flex; justify-content: space-between; gap: 1rem; }
 .btn-outline-dark { background: transparent; border-color: var(--color-charcoal); color: var(--color-charcoal); }
@@ -204,6 +211,8 @@ legend { font-family: var(--font-heading); font-size: 1.2rem; padding: 0; margin
 .booking-success-note { font-size: 0.9rem; color: #888; margin-top: 1.5rem; padding-top: 1rem; border-top: 1px dashed rgb(26 26 26 / 20%); }
 
 .calendar-actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 0.75rem; margin-top: 1.5rem; }
+
+.split-section img.crop-top { object-position: top; }
 
 .modal-overlay {
   position: fixed;
