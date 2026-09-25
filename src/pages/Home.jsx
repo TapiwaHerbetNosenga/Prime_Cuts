@@ -100,11 +100,13 @@ export default function Home() {
       </section>
 
       <section className="cta-band">
-        <div className="container">
-          <h2>Ready for a fresh cut?</h2>
-          <Link to="/booking" className="btn">Book your appointment</Link>
-        </div>
-      </section>
+  <div className="container">
+    <div className="cta-band-card">
+      <h2>Ready for a fresh cut?</h2>
+      <Link to="/booking" className="btn">Book your appointment</Link>
+    </div>
+  </div>
+</section>
     </>
   )
 }

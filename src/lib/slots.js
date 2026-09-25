@@ -62,3 +62,13 @@ export function nextDays(count = 14) {
   }
   return days
 }
+
+export function occupiedSlotTimes(startTime, durationMinutes) {
+  const [h, m] = startTime.split(':').map(Number)
+  const startMin = h * 60 + m
+  const times = []
+  for (let t = startMin; t < startMin + durationMinutes; t += 15) {
+    times.push(toHHMM(t))
+  }
+  return times
+}

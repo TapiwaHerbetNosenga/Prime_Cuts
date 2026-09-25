@@ -3,6 +3,7 @@
   --color-cream: #f5efe6;
   --color-brass: #c8a24a;
   --color-oxblood: #8c2f2b;
+  --color-cream-light: #fbf8f3;
   --font-heading: 'Playfair Display', Georgia, serif;
   --font-body: 'Inter', system-ui, sans-serif;
   --radius: 6px;
@@ -117,8 +118,16 @@ a { color: inherit; }
 .hours-location h2 { font-size: 1.15rem; }
 
 /* CTA band */
-.cta-band { padding-block: 3rem; background: var(--color-charcoal); color: var(--color-cream); text-align: center; }
-.cta-band h2 { margin: 0 0 1.25rem; color: var(--color-brass); }
+.cta-band { padding-block: 4rem; background: var(--color-cream); text-align: center; }
+.cta-band .container { max-width: 560px; }
+.cta-band-card {
+  padding: 2.5rem 2rem;
+  background: var(--color-cream-light);
+  border: 1px solid rgb(26 26 26 / 12%);
+  border-radius: var(--radius);
+ box-shadow: 0 12px 32px rgb(26 26 26 / 18%), 0 2px 8px rgb(26 26 26 / 10%);
+}
+.cta-band h2 { margin: 0 0 1.25rem; color: var(--color-oxblood); }
 
 /* About: barber grid */
 .barber-grid { display: grid; gap: 1.5rem; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
