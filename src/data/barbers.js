@@ -14,10 +14,10 @@ export const barbers = [
     specialties: ['Classic cuts', 'Beard shaping', 'Line-ups'],
   },
   {
-    id: 'naledi',
-    name: 'Naledi Khumalo',
+    id: 'damian',
+    name: 'Damian Khumalo',
     role: 'Barber',
-    bio: 'Naledi works across all cuts and is the shop\'s go-to for kids and first-time clients.',
+    bio: 'Da works across all cuts and is the shop\'s go-to for kids and first-time clients.',
     specialties: ['Kids cuts', 'Textured cuts', 'Line-ups'],
   },
 ]
